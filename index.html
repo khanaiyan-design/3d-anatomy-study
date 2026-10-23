@@ -1,0 +1,999 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>3D Anatomy Study</title>
+
+    <meta name="description"
+        content="Interactive 3D human anatomy and dental anatomy study website">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b1120;
+            color: white;
+        }
+
+        /* HEADER */
+
+        header {
+            height: 70px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 1px solid #263248;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        nav button {
+            background: #1e293b;
+            color: white;
+            border: 1px solid #334155;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        nav button:hover {
+            background: #2563eb;
+        }
+
+        /* PAGE */
+
+        main {
+            min-height: calc(100vh - 70px);
+        }
+
+        .page {
+            display: none;
+            padding: 30px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: #94a3b8;
+        }
+
+        /* HOME */
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 55px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            max-width: 700px;
+            color: #94a3b8;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            margin-top: 30px;
+        }
+
+        .primary-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 9px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .primary-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* 3D WORKSPACE */
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 230px 1fr 280px;
+            gap: 15px;
+            min-height: 650px;
+        }
+
+        .sidebar,
+        .info-panel {
+            background: #111827;
+            border: 1px solid #263248;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h2,
+        .info-panel h2 {
+            margin-bottom: 18px;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #334155;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 7px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .sidebar button:hover {
+            background: #2563eb;
+        }
+
+        /* 3D VIEWER */
+
+        .viewer {
+            position: relative;
+            min-height: 650px;
+            background: radial-gradient(circle, #1e293b, #020617);
+            border: 1px solid #263248;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .viewer-placeholder {
+            height: 100%;
+            min-height: 650px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .viewer-placeholder .big-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+
+        .viewer-placeholder h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .controls button {
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            border: 1px solid #475569;
+            padding: 10px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background: #2563eb;
+        }
+
+        /* INFORMATION */
+
+        .info-panel p {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .info-box h3 {
+            margin-bottom: 8px;
+        }
+
+        /* SYSTEMS */
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .system-card {
+            background: #111827;
+            border: 1px solid #263248;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .system-card h2 {
+            margin-bottom: 12px;
+        }
+
+        .system-card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 900px) {
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .system-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                height: auto;
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .viewer,
+            .viewer-placeholder {
+                min-height: 500px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <div class="logo">
+            🧠 3D Anatomy Study
+        </div>
+
+        <nav>
+
+            <button onclick="showPage('home')">
+                Home
+            </button>
+
+            <button onclick="showPage('body')">
+                🧍 Full Body
+            </button>
+
+            <button onclick="showPage('teeth')">
+                🦷 Teeth
+            </button>
+
+            <button onclick="showPage('systems')">
+                Body Systems
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <!-- ================= HOME ================= -->
+
+        <section id="home" class="page active">
+
+            <div class="hero">
+
+                <h1>
+                    🧠 3D Anatomy Study
+                </h1>
+
+                <p>
+                    Explore the human body and dental anatomy
+                    through interactive 3D models.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <button class="primary-btn"
+                        onclick="showPage('body')">
+                        🧍 Explore Full Body
+                    </button>
+
+                    <button class="primary-btn"
+                        onclick="showPage('teeth')">
+                        🦷 Explore Teeth
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= FULL BODY ================= -->
+
+        <section id="body" class="page">
+
+            <div class="page-title">
+
+                <h1>
+                    🧍 Human Body 3D Explorer
+                </h1>
+
+                <p>
+                    Rotate, zoom and study the human body.
+                </p>
+
+            </div>
+
+
+            <div class="workspace">
+
+                <!-- LEFT MENU -->
+
+                <aside class="sidebar">
+
+                    <h2>Body Parts</h2>
+
+                    <button onclick="selectBodyPart('Brain')">
+                        🧠 Brain
+                    </button>
+
+                    <button onclick="selectBodyPart('Heart')">
+                        ❤️ Heart
+                    </button>
+
+                    <button onclick="selectBodyPart('Lungs')">
+                        🫁 Lungs
+                    </button>
+
+                    <button onclick="selectBodyPart('Liver')">
+                        Liver
+                    </button>
+
+                    <button onclick="selectBodyPart('Stomach')">
+                        Stomach
+                    </button>
+
+                    <button onclick="selectBodyPart('Kidneys')">
+                        Kidneys
+                    </button>
+
+                    <button onclick="selectBodyPart('Skeleton')">
+                        🦴 Skeleton
+                    </button>
+
+                    <button onclick="selectBodyPart('Muscles')">
+                        💪 Muscles
+                    </button>
+
+                </aside>
+
+
+                <!-- 3D VIEWER -->
+
+                <div class="viewer">
+
+                    <div id="body3D"
+                        class="viewer-placeholder">
+
+                        <div class="big-icon">
+                            🧍
+                        </div>
+
+                        <h2>
+                            Full Body 3D Model
+                        </h2>
+
+                        <p>
+                            Your interactive 3D human model
+                            will appear here.
+                        </p>
+
+                    </div>
+
+
+                    <div class="controls">
+
+                        <button onclick="resetBody()">
+                            ↻ Reset
+                        </button>
+
+                        <button onclick="zoomBodyIn()">
+                            ＋
+                        </button>
+
+                        <button onclick="zoomBodyOut()">
+                            −
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INFORMATION -->
+
+                <aside class="info-panel">
+
+                    <h2 id="bodyTitle">
+                        Human Body
+                    </h2>
+
+                    <p id="bodyDescription">
+
+                        Select a body part to see
+                        information about it.
+
+                    </p>
+
+                    <div class="info-box">
+
+                        <h3>
+                            📚 Study Mode
+                        </h3>
+
+                        <p>
+                            You will be able to rotate
+                            the 3D model, zoom into organs
+                            and select individual structures.
+                        </p>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= TEETH ================= -->
+
+        <section id="teeth" class="page">
+
+            <div class="page-title">
+
+                <h1>
+                    🦷 Detailed 3D Dental Anatomy
+                </h1>
+
+                <p>
+                    Explore the structure of a human tooth.
+                </p>
+
+            </div>
+
+
+            <div class="workspace">
+
+                <!-- TOOTH MENU -->
+
+                <aside class="sidebar">
+
+                    <h2>
+                        Tooth Anatomy
+                    </h2>
+
+                    <button onclick="selectToothPart('Enamel')">
+                        🦷 Enamel
+                    </button>
+
+                    <button onclick="selectToothPart('Dentin')">
+                        Dentin
+                    </button>
+
+                    <button onclick="selectToothPart('Pulp')">
+                        🔴 Dental Pulp
+                    </button>
+
+                    <button onclick="selectToothPart('Pulp Chamber')">
+                        Pulp Chamber
+                    </button>
+
+                    <button onclick="selectToothPart('Root Canal')">
+                        Root Canal
+                    </button>
+
+                    <button onclick="selectToothPart('Cementum')">
+                        Cementum
+                    </button>
+
+                    <button onclick="selectToothPart('Periodontal Ligament')">
+                        Periodontal Ligament
+                    </button>
+
+                    <button onclick="selectToothPart('Alveolar Bone')">
+                        Alveolar Bone
+                    </button>
+
+                    <button onclick="selectToothPart('Nerve')">
+                        Nerve
+                    </button>
+
+                    <button onclick="selectToothPart('Blood Vessels')">
+                        Blood Vessels
+                    </button>
+
+                </aside>
+
+
+                <!-- TOOTH VIEWER -->
+
+                <div class="viewer">
+
+                    <div id="tooth3D"
+                        class="viewer-placeholder">
+
+                        <div class="big-icon">
+                            🦷
+                        </div>
+
+                        <h2>
+                            Detailed Tooth 3D Model
+                        </h2>
+
+                        <p>
+                            Your interactive tooth model
+                            will appear here.
+                        </p>
+
+                    </div>
+
+
+                    <div class="controls">
+
+                        <button onclick="resetTooth()">
+                            ↻ Reset
+                        </button>
+
+                        <button onclick="zoomToothIn()">
+                            ＋
+                        </button>
+
+                        <button onclick="zoomToothOut()">
+                            −
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOOTH INFORMATION -->
+
+                <aside class="info-panel">
+
+                    <h2 id="toothTitle">
+                        Tooth Anatomy
+                    </h2>
+
+                    <p id="toothDescription">
+
+                        Select a tooth structure to
+                        learn about its function.
+
+                    </p>
+
+
+                    <div class="info-box">
+
+                        <h3>
+                            🦷 Tooth Layers
+                        </h3>
+
+                        <p>
+                            Enamel → Dentin → Pulp
+                        </p>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <h3>
+                            🔬 Study
+                        </h3>
+
+                        <p>
+                            The final version will allow
+                            you to hide and show individual
+                            tooth layers.
+                        </p>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= BODY SYSTEMS ================= -->
+
+        <section id="systems" class="page">
+
+            <div class="page-title">
+
+                <h1>
+                    🧬 Human Body Systems
+                </h1>
+
+                <p>
+                    Study the major systems of the human body.
+                </p>
+
+            </div>
+
+
+            <div class="system-grid">
+
+                <div class="system-card">
+
+                    <h2>🦴 Skeletal System</h2>
+
+                    <p>
+                        Supports the body, protects organs
+                        and provides a framework for movement.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>💪 Muscular System</h2>
+
+                    <p>
+                        Produces movement, maintains posture
+                        and generates body heat.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>❤️ Circulatory System</h2>
+
+                    <p>
+                        The heart and blood vessels transport
+                        oxygen, nutrients and waste products.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>🫁 Respiratory System</h2>
+
+                    <p>
+                        Brings oxygen into the body and
+                        removes carbon dioxide.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>🧠 Nervous System</h2>
+
+                    <p>
+                        Controls communication between the
+                        brain, spinal cord and body.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>🍽️ Digestive System</h2>
+
+                    <p>
+                        Breaks food down and absorbs
+                        nutrients.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>🦷 Dental Anatomy</h2>
+
+                    <p>
+                        Study the structure and anatomy
+                        of human teeth.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>🧬 Reproductive System</h2>
+
+                    <p>
+                        Responsible for reproduction and
+                        reproductive functions.
+                    </p>
+
+                </div>
+
+
+                <div class="system-card">
+
+                    <h2>🛡️ Immune System</h2>
+
+                    <p>
+                        Helps protect the body against
+                        harmful pathogens.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        function showPage(pageName) {
+
+            const pages =
+                document.querySelectorAll(".page");
+
+            pages.forEach(function(page) {
+
+                page.classList.remove("active");
+
+            });
+
+            const selected =
+                document.getElementById(pageName);
+
+            if (selected) {
+
+                selected.classList.add("active");
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            }
+
+        }
+
+
+        /* BODY INFORMATION */
+
+        function selectBodyPart(part) {
+
+            const title =
+                document.getElementById("bodyTitle");
+
+            const description =
+                document.getElementById("bodyDescription");
+
+
+            const information = {
+
+                Brain:
+                    "The brain is the main control organ of the nervous system. It processes information and controls many body functions.",
+
+                Heart:
+                    "The heart is a muscular organ that pumps blood throughout the body.",
+
+                Lungs:
+                    "The lungs are responsible for gas exchange, bringing oxygen into the body and removing carbon dioxide.",
+
+                Liver:
+                    "The liver performs many important functions including metabolism, detoxification and production of bile.",
+
+                Stomach:
+                    "The stomach stores and mechanically and chemically processes food during digestion.",
+
+                Kidneys:
+                    "The kidneys filter blood and help regulate fluid, electrolyte and waste balance.",
+
+                Skeleton:
+                    "The skeleton provides support and protection and works with muscles to allow movement.",
+
+                Muscles:
+                    "Muscles contract to produce movement and help maintain posture."
+            };
+
+
+            title.textContent = part;
+
+            description.textContent =
+                information[part] ||
+                "Information about this body part.";
+        }
+
+
+        /* TOOTH INFORMATION */
+
+        function selectToothPart(part) {
+
+            const title =
+                document.getElementById("toothTitle");
+
+            const description =
+                document.getElementById("toothDescription");
+
+
+            const information = {
+
+                Enamel:
+                    "Enamel is the hard outer covering of the tooth crown. It protects the underlying tissues.",
+
+                Dentin:
+                    "Dentin forms most of the tooth and lies underneath the enamel and cementum.",
+
+                Pulp:
+                    "Dental pulp is the soft tissue inside the tooth containing nerves, blood vessels and connective tissue.",
+
+                "Pulp Chamber":
+                    "The pulp chamber is the central space within the crown that contains dental pulp.",
+
+                "Root Canal":
+                    "The root canal is the passage within the tooth root that contains the pulp tissue and neurovascular structures.",
+
+                Cementum:
+                    "Cementum is a mineralized tissue covering the tooth root and provides attachment for periodontal fibers.",
+
+                "Periodontal Ligament":
+                    "The periodontal ligament is connective tissue that attaches the tooth to the surrounding alveolar bone.",
+
+                "Alveolar Bone":
+                    "Alveolar bone forms the part of the jaw that surrounds and supports the tooth roots.",
+
+                Nerve:
+                    "Dental nerves provide sensory information from the tooth and surrounding tissues.",
+
+                "Blood Vessels":
+                    "Blood vessels supply the dental pulp with oxygen and nutrients."
+            };
+
+
+            title.textContent = part;
+
+            description.textContent =
+                information[part] ||
+                "Information about this tooth structure.";
+        }
+
+
+        /* PLACEHOLDER CONTROLS */
+
+        function resetBody() {
+
+            alert(
+                "The 3D body model will be connected in the next step."
+            );
+
+        }
+
+
+        function zoomBodyIn() {
+
+            alert(
+                "Zoom will work after the 3D model is added."
+            );
+
+        }
+
+
+        function zoomBodyOut() {
+
+            alert(
+                "Zoom will work after the 3D model is added."
+            );
+
+        }
+
+
+        function resetTooth() {
+
+            alert(
+                "The 3D tooth model will be connected in the next step."
+            );
+
+        }
+
+
+        function zoomToothIn() {
+
+            alert(
+                "Tooth zoom will work after the 3D model is added."
+            );
+
+        }
+
+
+        function zoomToothOut() {
+
+            alert(
+                "Tooth zoom will work after the 3D model is added."
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+```
